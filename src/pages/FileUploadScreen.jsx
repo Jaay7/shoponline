@@ -34,7 +34,9 @@ const useStyles = makeStyles({
     color: '#6c8780',
     marginTop: 10,
     marginBottom: 10,
-    cursor: 'pointer'
+    cursor: 'pointer',
+    width: 'max-content',
+    padding: '0px 10px'
   }
 })
 

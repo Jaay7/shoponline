@@ -211,14 +211,22 @@ const Home = () => {
             <Icon baseClassName='material-icons-round'>person</Icon>
             <Typography sx={{ml: 2}}>Profile</Typography>
           </MenuItem>
-          <MenuItem onClick={() => navigate('/saved')}>
-            <Icon baseClassName='material-icons-round'>bookmark</Icon>
-            <Typography sx={{ml: 2}}>Saved</Typography>
-          </MenuItem>
-          <MenuItem onClick={() => navigate('/cart')}>
-            <Icon baseClassName='material-icons-round'>shopping_cart</Icon>
-            <Typography sx={{ml: 2}}>My Cart</Typography>
-          </MenuItem>
+          {
+            userData && userData.me.userType === 'admin' ?
+              <MenuItem onClick={() => navigate('/file-upload')}>
+                <Icon baseClassName='material-icons-round'>file_upload</Icon>
+                <Typography sx={{ml: 2}}>Add Product</Typography>
+              </MenuItem> : <>
+              <MenuItem onClick={() => navigate('/saved')}>
+                <Icon baseClassName='material-icons-round'>bookmark</Icon>
+                <Typography sx={{ml: 2}}>Saved</Typography>
+              </MenuItem>
+              <MenuItem onClick={() => navigate('/cart')}>
+                <Icon baseClassName='material-icons-round'>shopping_cart</Icon>
+                <Typography sx={{ml: 2}}>My Cart</Typography>
+              </MenuItem>
+              </>
+          }
           <Divider />
           <ContainedButton onClick={() => localStorage.removeItem('token')} style={{width: '100%'}}>
             <Icon baseClassName='material-icons-round'>logout</Icon>

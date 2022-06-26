@@ -113,6 +113,11 @@ const FileUploadScreen = () => {
       description,
       category
     },
+    context: {
+      headers: {
+        'Authorization': localStorage.getItem('token')
+      }
+    },
     onCompleted: () => {
       console.log('Product created');
       setName('');

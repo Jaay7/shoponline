@@ -1,7 +1,7 @@
 import React from 'react'
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { makeStyles } from '@mui/styles'
-import { Typography, CircularProgress, Card, CardActionArea, CardContent, Button, CardHeader, IconButton, Icon, Snackbar, Tooltip, MenuItem, Menu, Divider, AppBar } from '@mui/material';
+import { Typography, CircularProgress, Card, Button, CardHeader, Icon, Snackbar, Tooltip, MenuItem, Menu, Divider, AppBar, CardActions, Stack } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 
@@ -212,11 +212,16 @@ const Home = () => {
             <Typography sx={{ml: 2}}>Profile</Typography>
           </MenuItem>
           {
-            userData && userData.me.userType === 'admin' ?
+            userData && userData.me.userType === 'admin' ? <>
               <MenuItem onClick={() => navigate('/file-upload')}>
                 <Icon baseClassName='material-icons-round'>file_upload</Icon>
                 <Typography sx={{ml: 2}}>Add Product</Typography>
-              </MenuItem> : <>
+              </MenuItem> 
+              <MenuItem onClick={() => navigate('/received-orders')}>
+                <Icon baseClassName='material-icons-round'>shopping_basket</Icon>
+                <Typography sx={{ml: 2}}>Received Orders</Typography>
+              </MenuItem> 
+              </> : <>
               <MenuItem onClick={() => navigate('/saved')}>
                 <Icon baseClassName='material-icons-round'>bookmark</Icon>
                 <Typography sx={{ml: 2}}>Saved</Typography>
@@ -224,6 +229,10 @@ const Home = () => {
               <MenuItem onClick={() => navigate('/cart')}>
                 <Icon baseClassName='material-icons-round'>shopping_cart</Icon>
                 <Typography sx={{ml: 2}}>My Cart</Typography>
+              </MenuItem>
+              <MenuItem onClick={() => navigate('/orders')}>
+                <Icon baseClassName='material-icons-round'>shopping_basket</Icon>
+                <Typography sx={{ml: 2}}>My Orders</Typography>
               </MenuItem>
               </>
           }
@@ -241,20 +250,45 @@ const Home = () => {
           <Typography>Error: {error.message}</Typography>
         : data && <div className={classes.cards}>
           {data.products.map(product => (
-            <Card elevation={0} key={product.id} sx={{width: 250, margin: 1, boxShadow: '0px 0px 2px #00000040'}}>
+            <Card elevation={0} key={product.id} sx={{width: 250, margin: 1, boxShadow: '0px 3px 6px #00000020'}}>
               <CardHeader
-              style={{height: 40}}
+                sx={{py: 1}}
                 action={
-                  localStorage.getItem('token') !== null || localStorage.getItem('token') !== undefined ?
+                  <Typography  sx={{mt: 2}}><b>&#x20b9;{product.price}</b></Typography>
+                }
+                subheader={<Typography style={{fontSize: 16, fontWeight: 'bold', color: '#565656'}}>{product.name}</Typography>}
+                title={<Typography style={{fontSize: 14, color: '#8D8D8D'}}>{product.category}</Typography>}
+              />
+              <Divider />
+              <div
+                className={classes.imageBox}
+                style={{backgroundImage: `url("${product.image}")`}}
+              />
+              <Divider />
+              <CardActions>
+              {
+                  localStorage.getItem('token') !== null || localStorage.getItem('token') !== undefined || localStorage.getItem('token') !== '' ?
                   userData && userData.me.userType === 'admin' ?
-                  <>
-                    <IconButton>
-                      <Icon baseClassName='material-icons-round'>edit</Icon>
-                    </IconButton>
-                    <IconButton
+                  <Stack flexDirection={'row'} justifyContent='space-between' width='100%'>
+                    <Button
+                      variant="text"
+                      style={{color: '#293934', textTransform: 'none', width: '100%'}}
+                      startIcon={<Icon baseClassName='material-icons-round'>edit</Icon>}
+                    >
+                      Edit
+                    </Button>
+                    <Divider orientation="vertical" flexItem />
+                    <Button
+                      variant="text"
+                      style={{color: '#ee715b', textTransform: 'none', width: '100%'}}
                       onClick={() => {
                         deleteProduct({
                           variables: {id: product.id},
+                          context: {
+                            headers: {
+                              'Authorization': localStorage.getItem('token')
+                            }
+                          },
                           onCompleted: () => {
                             setOpenSnackBar(true);
                             setSnackBarMessage(`${product.name} deleted`);
@@ -265,12 +299,15 @@ const Home = () => {
                           }
                         })
                       }}
+                      startIcon={<Icon baseClassName='material-icons-round'>delete</Icon>}
                     >
-                      <Icon baseClassName='material-icons-round'>delete</Icon>
-                    </IconButton>
-                  </> :
-                  <>
-                    <IconButton
+                      Delete
+                    </Button>
+                  </Stack> :
+                  <Stack flexDirection={'row'} justifyContent='space-between' width='100%'>
+                    <Button
+                      variant="text"
+                      style={{color: '#293934', textTransform: 'none', width: '100%'}}
                       onClick={() => {
                         saveProduct({
                           variables: {productId: product.id},
@@ -289,10 +326,14 @@ const Home = () => {
                           }
                         })
                       }}
+                      startIcon={<Icon baseClassName='material-icons-round'>bookmark_border</Icon>}
                     >
-                      <Icon baseClassName='material-icons-round'>bookmark_border</Icon>
-                    </IconButton>
-                    <IconButton
+                      Save
+                    </Button>
+                    <Divider orientation="vertical" flexItem />
+                    <Button
+                      variant="text"
+                      style={{color: '#293934', textTransform: 'none', width: '100%'}}
                       onClick={() => {
                         addToCart({
                           variables: {productId: product.id},
@@ -311,33 +352,13 @@ const Home = () => {
                           }
                         })
                       }}
+                      startIcon={<Icon baseClassName='material-icons-round'>add_shopping_cart</Icon>}
                     >
-                      <Icon baseClassName='material-icons-round'>add_shopping_cart</Icon>
-                    </IconButton>
-                  </> : <></>
+                      Add to Cart
+                    </Button>
+                  </Stack> : <></>
                 }
-                title={<Typography style={{fontSize: 17}}>{product.name}</Typography>}
-                subheader={product.category}
-              />
-              <CardActionArea>
-                <div
-                  className={classes.imageBox}
-                  style={{backgroundImage: `url("${product.image}")`}}
-                />
-                <CardContent style={{height: 20}}>
-                  {product.description && <Typography>{product.description}</Typography>}
-                  <Typography><b>&#x20b9;{product.price}</b></Typography>
-                </CardContent>
-              </CardActionArea>
-              {/* <CardActions disableSpacing>
-                <ContainedButton variant="outlined">
-                  <Icon baseClassName='material-icons-round'>bookmark_border</Icon>
-                  <Typography style={{marginLeft: 8}}>Save</Typography>
-                </ContainedButton>
-                <Button size="small" color="primary">
-                  Share
-                </Button>
-              </CardActions> */}
+              </CardActions>
             </Card>
           ))}
         </div> 

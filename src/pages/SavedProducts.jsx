@@ -1,7 +1,7 @@
 import React from 'react'
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { makeStyles } from '@mui/styles'
-import { Typography, CircularProgress, Card, CardActionArea, CardContent, CardHeader, IconButton, Icon, Snackbar, Divider } from '@mui/material';
+import { Typography, CircularProgress, Card, CardHeader, Icon, Snackbar, Divider, CardActions, Button, Stack } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 
@@ -28,6 +28,12 @@ const remove_save_product = gql`
   }
 `;
 
+const add_to_cart = gql`
+  mutation Mutation($productId: ID!) {
+    addToCart(productId: $productId)
+  }
+`;
+
 const useStyles = makeStyles({
   container: {
     display: 'flex',
@@ -51,6 +57,18 @@ const useStyles = makeStyles({
     backgroundRepeat: 'no-repeat'
   },
 })
+
+const StyledCardsDiv = styled((props) => <div {...props} />)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  marginBottom: '60px',
+  [theme.breakpoints.down('md')]: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+}));
 
 const StyledDiv = styled((props) => <div {...props} />)(({ theme }) => ({
   marginTop: 16,
@@ -89,6 +107,7 @@ const SavedProducts = () => {
   };
 
   const [removeSaveProduct] = useMutation(remove_save_product)
+  const [addToCart] = useMutation(add_to_cart)
 
   return(
     error ? <div>Error! {error.message}</div> :
@@ -98,15 +117,28 @@ const SavedProducts = () => {
         Saved Products</Typography>
       <Divider style={{marginBottom: 16 }} />
       {loading ? <CircularProgress size={28} color="inherit" /> :
-      data && <div className={classes.cards}>
+      data && <StyledCardsDiv>
           {data.me.savedProducts.length > 0 ? data.me.savedProducts.map(product => (
-            <Card elevation={0} key={product.id} sx={{width: 250, margin: 1, boxShadow: '0px 0px 2px #00000040'}}>
+            <Card elevation={0} key={product.id} sx={{width: 250, margin: 1, boxShadow: '0px 3px 6px #00000020'}}>
               <CardHeader
-                style={{height: 40}}
-                title={<Typography style={{fontSize: 17}}>{product.name}</Typography>}
-                subheader={product.category}
+                sx={{py: 1}}
+                subheader={<Typography style={{fontSize: 16, fontWeight: 'bold', color: '#565656'}}>{product.name}</Typography>}
+                title={<Typography style={{fontSize: 14, color: '#8D8D8D'}}>{product.category}</Typography>}
                 action={
-                  <IconButton size="small"
+                  <Typography  sx={{mt: 2}}><b>&#x20b9;{product.price}</b></Typography>
+                }
+              />
+              <Divider />
+              <div
+                className={classes.imageBox}
+                style={{backgroundImage: `url("${product.image}")`}}
+              />
+              <Divider />
+              <CardActions style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <Stack flexDirection={'row'} justifyContent='space-between' width='100%'>
+                  <Button
+                    variant="text"
+                    style={{color: '#ee715b', textTransform: 'none', width: '100%'}}
                     onClick={() => {
                       removeSaveProduct({
                         variables: {productId: product.id},
@@ -125,24 +157,41 @@ const SavedProducts = () => {
                         }
                       })
                     }}
+                    startIcon={<Icon baseClassName='material-icons-round'>delete</Icon>}
                   >
-                    <Icon baseClassName='material-icons-round'>delete</Icon>
-                  </IconButton>
-                }
-              />
-              <CardActionArea>
-                <div
-                  className={classes.imageBox}
-                  style={{backgroundImage: `url("${product.image}")`}}
-                />
-                <CardContent style={{height: 20}}>
-                  {product.description && <Typography>{product.description}</Typography>}
-                  <Typography><b>&#x20b9;{product.price}</b></Typography>
-                </CardContent>
-              </CardActionArea>
+                    Remove
+                  </Button>
+                  <Divider orientation="vertical" flexItem />
+                  <Button 
+                    variant="text"
+                    style={{color: '#293934', textTransform: 'none', width: '100%'}}
+                    onClick={() => {
+                      addToCart({
+                        variables: {productId: product.id},
+                        context: {
+                          headers: {
+                            Authorization: localStorage.getItem('token')
+                          }
+                        },
+                        onCompleted: () => {
+                          setOpenSnackBar(true);
+                          setSnackBarMessage(`${product.name} added to cart`);
+                        },
+                        onError: () => {
+                          setOpenSnackBar(true);
+                          setSnackBarMessage("Add to cart Failed!");
+                        }
+                      })
+                    }}
+                    startIcon={<Icon baseClassName='material-icons-round'>add_shopping_cart</Icon>}
+                  >
+                    Add to Cart
+                  </Button>
+                </Stack>
+              </CardActions>
             </Card>
           )) : "No products saved"}
-        </div>
+        </StyledCardsDiv>
       }
       <Snackbar
         open={openSnackBar}

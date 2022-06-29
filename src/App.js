@@ -9,6 +9,8 @@ import Login from './pages/Login';
 import Profile from './pages/Profile';
 import SavedProducts from './pages/SavedProducts';
 import MyCart from './pages/MyCart';
+import MyOrders from './pages/MyOrders';
+import AdminOrdersScreen from './pages/AdminOrdersScreen';
 
 const get_auth_user = gql`
   query Query {
@@ -42,8 +44,12 @@ const App = () => {
             <Route path="/profile" element={<Profile />} />
             <Route path="/saved" element={<SavedProducts />} />
             <Route path="/cart" element={<MyCart />} />
+            <Route path="/orders" element={<MyOrders />} />
             {data.me.userType === 'admin' ?
+            <>
               <Route path="/file-upload" element={<FileUploadScreen />} /> 
+              <Route path="/received-orders" element={<AdminOrdersScreen />} />
+            </>
               : <></>
             }</>
           }

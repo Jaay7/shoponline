@@ -1,10 +1,11 @@
 import React from 'react';
 import { storage } from '../config';
-import { TextField, Typography, Button, CircularProgress } from '@mui/material'
+import { TextField, Typography, Button, CircularProgress, Icon, Divider } from '@mui/material'
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { styled } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles'
 import { gql, useMutation } from '@apollo/client';
+import { useNavigate } from 'react-router-dom';
 
 const upload_product = gql`
   mutation CreateProduct($name: String!, $price: String!, $image: String!, $description: String, $category: String) {
@@ -76,9 +77,21 @@ const ContainedButton = styled((props) => <Button {...props} />)(({ theme }) => 
   }
 }));
 
+const StyledDiv = styled((props) => <div {...props} />)(({ theme }) => ({
+  marginTop: 16,
+  padding: '20px 10px',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  [theme.breakpoints.up('sm')]: {
+    padding: '20px 60px',
+    marginTop: 0,
+  },
+}));
+
 const FileUploadScreen = () => {
   const classes = useStyles();
-
+  const navigate = useNavigate();
   const [name, setName] = React.useState('');
   const [price, setPrice] = React.useState();
   const [description, setDescription] = React.useState('');
@@ -129,9 +142,12 @@ const FileUploadScreen = () => {
   });
 
   return (
-    <div className={classes.container}>
+    <StyledDiv>
+      <Typography variant="h6" style={{fontWeight: 'bold', color: '#464646', display: 'flex', alignItems: 'center', alignSelf: 'flex-start'}} gutterBottom>
+        <Icon baseClassName='material-icons-round' onClick={() => navigate('/')} style={{marginRight: 10, cursor: 'pointer'}}>keyboard_backspace</Icon>
+        Upload Products</Typography>
+      <Divider style={{marginBottom: 16 }} flexItem />
       <div className={classes.form}>
-        <Typography variant="h4">Upload Product</Typography>
         <StyledTextField
           label="Name"
           value={name}
@@ -176,7 +192,7 @@ const FileUploadScreen = () => {
           {loading ? <CircularProgress size={28} color="inherit" /> : "Add Product"}
         </ContainedButton>
       </div>
-    </div>
+    </StyledDiv>
   );
 }
 

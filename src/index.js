@@ -5,7 +5,7 @@ import App from './App';
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 
 const client = new ApolloClient({
-  uri: 'https://shoponline-backend.herokuapp.com/graphql',
+  uri: 'https://shoponline-apis.onrender.com/graphql',
   cache: new InMemoryCache()
 })
 

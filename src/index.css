@@ -17,6 +17,10 @@
   animation: opacityframe 300ms ease linear;
 }
 
+.animate-notification {
+  animation: opacityframe 250ms ease-in-out;
+}
+
 @keyframes opacityframe {
   from {
     opacity: 0;

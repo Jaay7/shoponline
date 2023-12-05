@@ -1,13 +1,16 @@
 import React from "react";
-import { Outlet } from "react-router";
 import {
   HiBars3,
   HiChevronDown,
   HiMagnifyingGlass,
   HiOutlineShoppingBag,
   HiXMark,
+  HiPlus,
+  HiMinus,
+  HiOutlineBookmark,
 } from "react-icons/hi2";
-import { Link } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { gql, useQuery } from "@apollo/client";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -74,10 +77,44 @@ const groupCategories = [
   },
 ];
 
+const get_user = gql`
+  query GetUser {
+    me {
+      id
+      email
+      userType
+      cartProducts {
+        id
+      }
+      savedProducts {
+        id
+      }
+    }
+  }
+`;
+
 const Header = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [category, setCategory] = React.useState("");
   const [mobileCategory, setMobileCategory] = React.useState("women");
   const [openSideMenu, setOpenSideMenu] = React.useState(false);
+  const [dropdownList, setDropdownList] = React.useState("");
+
+  const { data: userData } = useQuery(get_user, {
+    context: {
+      headers: {
+        Authorization: localStorage.getItem("token"),
+      },
+    },
+    pollInterval: 500,
+  });
+
+  const onLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+  };
+
   return (
     <div className="bg-white">
       <div className="relative z-40 lg:hidden" role="dialog" aria-modal="true">
@@ -120,7 +157,7 @@ const Header = () => {
                       mobileCategory === "women"
                         ? "border-indigo-600 text-indigo-600"
                         : "border-transparent text-gray-900",
-                      "flex-1 whitespace-nowrap border-b-2 px-1 py-4 text-base font-medium",
+                      "flex-1 whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium",
                     )}
                     aria-controls="tabs-1-panel-1"
                     role="tab"
@@ -135,7 +172,7 @@ const Header = () => {
                       mobileCategory === "men"
                         ? "border-indigo-600 text-indigo-600"
                         : "border-transparent text-gray-900",
-                      "flex-1 whitespace-nowrap border-b-2 px-1 py-4 text-base font-medium",
+                      "flex-1 whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium",
                     )}
                     aria-controls="tabs-1-panel-2"
                     role="tab"
@@ -155,7 +192,7 @@ const Header = () => {
                 .map((item, index) => (
                   <div
                     id="tabs-1-panel-1"
-                    className="space-y-10 px-4 pb-8 pt-10"
+                    className="space-y-2 px-4 pb-8 pt-6"
                     aria-labelledby="tabs-1-tab-1"
                     role="tabpanel"
                     tabIndex="0"
@@ -163,25 +200,43 @@ const Header = () => {
                   >
                     {item.subs.map((vari) => (
                       <div key={vari.name}>
-                        <p
-                          id="women-clothing-heading-mobile"
-                          className="font-medium text-gray-900"
+                        <button
+                          type="button"
+                          className="flex w-full items-center justify-between bg-white px-2 py-3 text-gray-400 hover:text-gray-500"
+                          onClick={() =>
+                            setDropdownList(
+                              dropdownList === `${vari.name} ${item.gender}`
+                                ? ""
+                                : `${vari.name} ${item.gender}`,
+                            )
+                          }
                         >
-                          {vari.name}
-                        </p>
+                          <span className="font-medium text-sm text-gray-900">
+                            {vari.name}
+                          </span>
+                          <span className="ml-6 flex items-center">
+                            {dropdownList === `${vari.name} ${item.gender}` ? (
+                              <HiMinus className="h-5 w-5w" />
+                            ) : (
+                              <HiPlus className="h-5 w-5" />
+                            )}
+                          </span>
+                        </button>
                         <ul
                           role="list"
                           aria-labelledby="women-clothing-heading-mobile"
-                          className="mt-6 flex flex-col space-y-6"
+                          className={classNames(
+                            dropdownList === `${vari.name} ${item.gender}`
+                              ? "flex"
+                              : "hidden",
+                            "mt-2 flex-col space-y-4",
+                          )}
                         >
                           {vari.variants.map((item) => (
                             <li key={item} className="flow-root">
-                              <a
-                                href="#"
-                                className="-m-2 block p-2 text-gray-500"
-                              >
+                              <p className="ml-3 min-w-0 flex-1 text-sm text-gray-700">
                                 {item}
-                              </a>
+                              </p>
                             </li>
                           ))}
                         </ul>
@@ -193,9 +248,22 @@ const Header = () => {
 
             <div className="space-y-6 border-t border-gray-200 px-4 py-6">
               <div className="flow-root">
+                <Link
+                  to={"/"}
+                  className={classNames(
+                    location.pathname === "/"
+                      ? "text-indigo-600"
+                      : "text-gray-900",
+                    "-m-2 block p-2 font-medium text-sm",
+                  )}
+                >
+                  Home
+                </Link>
+              </div>
+              <div className="flow-root">
                 <a
                   href="#"
-                  className="-m-2 block p-2 font-medium text-gray-900"
+                  className="-m-2 block p-2 font-medium text-sm text-gray-900"
                 >
                   Company
                 </a>
@@ -203,7 +271,7 @@ const Header = () => {
               <div className="flow-root">
                 <a
                   href="#"
-                  className="-m-2 block p-2 font-medium text-gray-900"
+                  className="-m-2 block p-2 font-medium text-sm text-gray-900"
                 >
                   Stores
                 </a>
@@ -211,30 +279,58 @@ const Header = () => {
             </div>
 
             <div className="space-y-6 border-t border-gray-200 px-4 py-6">
-              <div className="flow-root">
-                <a
-                  href="#"
-                  className="-m-2 block p-2 font-medium text-gray-900"
-                >
-                  Sign in
-                </a>
-              </div>
-              <div className="flow-root">
-                <a
-                  href="#"
-                  className="-m-2 block p-2 font-medium text-gray-900"
-                >
-                  Create account
-                </a>
-              </div>
+              {localStorage.getItem("token") ? (
+                <React.Fragment>
+                  <div className="flow-root">
+                    <Link
+                      to={"/profile"}
+                      className={classNames(
+                        location.pathname === "/profile"
+                          ? "text-indigo-600"
+                          : "text-gray-900",
+                        "-m-2 block p-2 font-medium text-sm",
+                      )}
+                    >
+                      Profile
+                    </Link>
+                  </div>
+                  <div className="flow-root">
+                    <button
+                      onClick={onLogout}
+                      className="-m-2 block p-2 font-medium text-sm text-gray-900"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                </React.Fragment>
+              ) : (
+                <React.Fragment>
+                  <div className="flow-root">
+                    <Link
+                      to={"/signin"}
+                      className="-m-2 block p-2 font-medium text-sm text-gray-900"
+                    >
+                      Sign in
+                    </Link>
+                  </div>
+                  <div className="flow-root">
+                    <Link
+                      to={"/signup"}
+                      className="-m-2 block p-2 font-medium text-sm text-gray-900"
+                    >
+                      Create account
+                    </Link>
+                  </div>
+                </React.Fragment>
+              )}
             </div>
           </div>
         </div>
       </div>
-
+      {/* Greater */}
       <header className="relative bg-white">
         <p className="flex h-10 items-center justify-center bg-indigo-600 px-4 text-sm font-medium text-white sm:px-6 lg:px-8">
-          Get free delivery on orders over &#x20b9;1000
+          Get free delivery on orders over &#x20b9;999
         </p>
 
         <nav
@@ -254,6 +350,17 @@ const Header = () => {
               </button>
               <div className="hidden lg:ml-8 lg:block lg:self-stretch">
                 <div className="flex h-full space-x-8">
+                  <Link
+                    to="/"
+                    className={classNames(
+                      location.pathname === "/"
+                        ? "border-indigo-600 text-indigo-600"
+                        : "border-transparent text-gray-700 hover:text-gray-800",
+                      "relative z-10 -mb-px flex items-center border-b-2 pt-px text-sm font-medium transition-colors duration-200 ease-out capitalize gap-x-1",
+                    )}
+                  >
+                    Home
+                  </Link>
                   {groupCategories.map((nav) => (
                     <div key={nav.gender} className="flex">
                       <div className="relative flex">
@@ -342,22 +449,50 @@ const Header = () => {
 
               <div className="ml-auto flex items-center">
                 <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
-                  <Link
-                    to={"/login"}
-                    className="text-sm font-medium text-gray-700 hover:text-gray-800"
-                  >
-                    Log in
-                  </Link>
-                  <span
-                    className="h-6 w-px bg-gray-200"
-                    aria-hidden="true"
-                  ></span>
-                  <Link
-                    to={"/signup"}
-                    className="text-sm font-medium text-gray-700 hover:text-gray-800"
-                  >
-                    Create account
-                  </Link>
+                  {localStorage.getItem("token") ? (
+                    <React.Fragment>
+                      <button
+                        className="text-sm font-medium text-gray-700 hover:text-gray-800"
+                        onClick={onLogout}
+                      >
+                        Logout
+                      </button>
+                      <span
+                        className="h-6 w-px bg-gray-200"
+                        aria-hidden="true"
+                      ></span>
+                      <Link
+                        to={"/profile"}
+                        className={classNames(
+                          location.pathname === "/profile"
+                            ? "text-indigo-600"
+                            : "text-gray-700 hover:text-gray-800",
+                          "text-sm font-medium",
+                        )}
+                      >
+                        Profile
+                      </Link>
+                    </React.Fragment>
+                  ) : (
+                    <React.Fragment>
+                      <Link
+                        to={"/signin"}
+                        className="text-sm font-medium text-gray-700 hover:text-gray-800"
+                      >
+                        Sign in
+                      </Link>
+                      <span
+                        className="h-6 w-px bg-gray-200"
+                        aria-hidden="true"
+                      ></span>
+                      <Link
+                        to={"/signup"}
+                        className="text-sm font-medium text-gray-700 hover:text-gray-800"
+                      >
+                        Create account
+                      </Link>
+                    </React.Fragment>
+                  )}
                 </div>
 
                 <div className="flex lg:ml-6">
@@ -367,15 +502,67 @@ const Header = () => {
                   </a>
                 </div>
 
-                <div className="ml-4 flow-root lg:ml-6">
-                  <a href="#" className="group -m-2 flex items-center p-2">
-                    <HiOutlineShoppingBag className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500" />
-                    <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
-                      0
-                    </span>
-                    <span className="sr-only">items in cart, view bag</span>
-                  </a>
-                </div>
+                {localStorage.getItem("token") ? (
+                  <React.Fragment>
+                    <div className="ml-4 flow-root lg:ml-6">
+                      <Link
+                        to={"/saved-products"}
+                        className="group -m-2 flex items-center p-2"
+                      >
+                        <HiOutlineBookmark
+                          className={classNames(
+                            location.pathname === "/saved-products"
+                              ? "text-indigo-600"
+                              : "text-gray-400 group-hover:text-gray-500",
+                            "h-6 w-6 flex-shrink-0",
+                          )}
+                        />
+                        <span
+                          className={classNames(
+                            location.pathname === "/saved-products"
+                              ? "text-indigo-600"
+                              : "text-gray-700 group-hover:text-gray-800",
+                            "ml-2 text-sm font-medium",
+                          )}
+                        >
+                          {userData ? userData.me.savedProducts.length : "0"}
+                        </span>
+                        <span className="sr-only">
+                          items in saved, view bag
+                        </span>
+                      </Link>
+                    </div>
+
+                    <div className="ml-4 flow-root lg:ml-6">
+                      <Link
+                        to={"/cart"}
+                        className="group -m-2 flex items-center p-2"
+                      >
+                        <HiOutlineShoppingBag
+                          className={classNames(
+                            location.pathname === "/cart"
+                              ? "text-indigo-600"
+                              : "text-gray-400 group-hover:text-gray-500",
+                            "h-6 w-6 flex-shrink-0",
+                          )}
+                        />
+                        <span
+                          className={classNames(
+                            location.pathname === "/cart"
+                              ? "text-indigo-600"
+                              : "text-gray-700 group-hover:text-gray-800",
+                            "ml-2 text-sm font-medium",
+                          )}
+                        >
+                          {userData ? userData.me.cartProducts.length : "0"}
+                        </span>
+                        <span className="sr-only">items in cart, view bag</span>
+                      </Link>
+                    </div>
+                  </React.Fragment>
+                ) : (
+                  ""
+                )}
               </div>
             </div>
           </div>

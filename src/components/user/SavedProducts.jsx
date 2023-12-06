@@ -2,6 +2,7 @@ import React from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import NotificationBox from "../utils/NotificationBox";
 
 const get_saved_products = gql`
   query SavedProducts {
@@ -47,9 +48,29 @@ const SavedProducts = () => {
   const [removeSaveProduct] = useMutation(remove_save_product);
   const [addToCart] = useMutation(add_to_cart);
 
+  const [notification, setNotification] = React.useState({
+    open: false,
+    for: "",
+    title: "",
+    description: "",
+  });
+
+  React.useEffect(() => {
+    if (notification.open) {
+      setTimeout(() => {
+        setNotification({
+          open: false,
+          for: "",
+          title: "",
+          description: "",
+        });
+      }, 2500);
+    }
+  }, [notification]);
+
   return (
     <div className="bg-white">
-      <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 sm:py-12 lg:max-w-7xl lg:px-8">
+      <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 sm:py-12 lg:max-w-7xl lg:px-8 flex flex-col items-center">
         <div className="pb-10">
           <h3 className="text-3xl font-semibold">Wishlist</h3>
         </div>
@@ -60,23 +81,67 @@ const SavedProducts = () => {
         ) : (
           <React.Fragment>
             {data && data.me.savedProducts.length > 0 ? (
-              <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
+              <div className="mx-auto border-t">
                 {data.me.savedProducts.map((product) => (
-                  <a key={product.id} className="group">
-                    <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7">
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="h-full w-full object-cover object-center group-hover:opacity-75"
-                      />
+                  <div
+                    key={product.id}
+                    className="flex justify-between py-8 border-b max-w-2xl"
+                  >
+                    <div className="flex flex-row gap-x-4">
+                      <div className="h-24 w-24 sm:h-28 sm:w-28 overflow-hidden rounded-lg bg-gray-200">
+                        <img
+                          src={product.image}
+                          className="h-full w-full object-cover object-center opacity-80"
+                        />
+                      </div>
+                      <div className="flex flex-col md:flex-row md:justify-between">
+                        <div className="flex flex-col space-y-1 sm:w-56">
+                          <p className="text-sm text-gray-800 font-medium">
+                            {product.name}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            {product.category}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                    <h3 className="mt-4 text-sm text-gray-700">
-                      {product.name}
-                    </h3>
-                    <p className="mt-1 text-lg font-medium text-gray-900">
-                      &#x20b9;{product.price}
-                    </p>
-                  </a>
+                    <div className="text-gray-500 hover:text-gray-700 flex flex-col justify-between items-end">
+                      <p className="text-sm text-gray-950 font-medium">
+                        &#x20b9;{product.price}
+                      </p>
+                      <button
+                        className="text-sm font-medium text-indigo-600"
+                        onClick={() => {
+                          removeSaveProduct({
+                            variables: { productId: product.id },
+                            context: {
+                              headers: {
+                                Authorization: localStorage.getItem("token"),
+                              },
+                            },
+                          })
+                            .then((response) => {
+                              setNotification({
+                                open: true,
+                                for: "success",
+                                title: "Product removed!",
+                                description: `Id: ${product.id}`,
+                              });
+                            })
+                            .catch((error) => {
+                              setNotification({
+                                open: true,
+                                for: "fail",
+                                title: "Failed to remove!",
+                                description: error.message,
+                              });
+                            });
+                        }}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
                 ))}
               </div>
             ) : (
@@ -85,6 +150,7 @@ const SavedProducts = () => {
           </React.Fragment>
         )}
       </div>
+      <NotificationBox notification={notification} />
     </div>
   );
 };

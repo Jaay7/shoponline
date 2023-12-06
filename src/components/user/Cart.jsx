@@ -2,7 +2,7 @@ import React from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { HiXMark } from "react-icons/hi2";
+import { HiXMark, HiArrowRight } from "react-icons/hi2";
 import { IoBagCheckOutline } from "react-icons/io5";
 
 const get_cart_products = gql`
@@ -185,7 +185,7 @@ const Cart = () => {
                   <div className="flex min-h-full flex-1 flex-col px-6 lg:px-8 col-span-2">
                     <div className="bg-gray-50 p-6 rounded-xl">
                       <h4 className="text-lg font-medium">Order summary</h4>
-                      <div className="divide-y divide-gray-200 mt-3">
+                      <div className="mt-3 flex flex-col">
                         <div className="flex flex-row justify-between py-4">
                           <p className="text-sm text-gray-500">Subtotal</p>
                           <p className="text-sm text-gray-900 font-medium">
@@ -225,6 +225,12 @@ const Cart = () => {
                           <IoBagCheckOutline className="h-5 w-5" />
                           Checkout
                         </button>
+                        <p className="flex items-center gap-x-1 text-gray-500 text-sm self-center mt-3">
+                          or{" "}
+                          <span className="flex items-center gap-x-1 text-indigo-600 font-medium">
+                            Continue shopping <HiArrowRight />
+                          </span>
+                        </p>
                       </div>
                     </div>
                   </div>

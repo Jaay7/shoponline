@@ -96,7 +96,7 @@ const Profile = () => {
                     Shipping address
                   </dt>
                   <dd className="mt-4 text-sm leading-6 text-gray-600 sm:col-span-2 sm:mt-0">
-                    <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                    <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                       <div className="sm:col-span-3">
                         <label
                           htmlFor="country"

@@ -1,6 +1,6 @@
 import React from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { HiXMark, HiArrowRight } from "react-icons/hi2";
 import { IoBagCheckOutline } from "react-icons/io5";
@@ -67,7 +67,7 @@ const Cart = () => {
     <div className="bg-white">
       <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 sm:py-12 lg:max-w-7xl lg:px-8">
         <div className="pb-10 border-b max-w-2xl">
-          <h3 className="text-3xl font-semibold">Shopping Cart</h3>
+          <h3 className="text-3xl font-bold">Shopping Cart</h3>
         </div>
         {loading ? (
           <div className="flex justify-center">
@@ -220,16 +220,30 @@ const Cart = () => {
                         </div>
                         <button
                           type="submit"
+                          disabled={!order.length > 0}
                           className="mt-3 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 gap-x-2"
+                          onClick={() => {
+                            navigate("/checkout", {
+                              state: {
+                                order: order,
+                                subTotalPrice: subTotalPrice,
+                                taxEstimate: taxEstimate,
+                                shippingEstimate: shippingEstimate,
+                              },
+                            });
+                          }}
                         >
                           <IoBagCheckOutline className="h-5 w-5" />
                           Checkout
                         </button>
                         <p className="flex items-center gap-x-1 text-gray-500 text-sm self-center mt-3">
                           or{" "}
-                          <span className="flex items-center gap-x-1 text-indigo-600 font-medium">
+                          <Link
+                            to="/"
+                            className="flex items-center gap-x-1 text-indigo-600 font-medium"
+                          >
                             Continue shopping <HiArrowRight />
-                          </span>
+                          </Link>
                         </p>
                       </div>
                     </div>

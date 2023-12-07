@@ -8,6 +8,7 @@ import Profile from "./components/user/Profile";
 import Cart from "./components/user/Cart";
 import Orders from "./components/user/Orders";
 import SavedProducts from "./components/user/SavedProducts";
+import Checkout from "./components/user/Checkout";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/saved-products" element={<SavedProducts />} />
             <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<Checkout />} />
             <Route path="/my-orders" element={<Orders />} />
           </Route>
           <Route path="/signin" element={<Login />} />

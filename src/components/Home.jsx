@@ -4,9 +4,11 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import {
   HiOutlineBookmark,
   HiOutlineShoppingBag,
+  HiOutlineShoppingCart,
   HiStar,
   HiXMark,
 } from "react-icons/hi2";
+import NotificationBox from "./utils/NotificationBox";
 
 const get_all_products = gql`
   query Query {
@@ -22,6 +24,18 @@ const get_all_products = gql`
   }
 `;
 
+const save_product = gql`
+  mutation Mutation($productId: ID!) {
+    addToSavedProducts(productId: $productId)
+  }
+`;
+
+const add_to_cart = gql`
+  mutation Mutation($productId: ID!) {
+    addToCart(productId: $productId)
+  }
+`;
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
@@ -33,6 +47,30 @@ const Home = () => {
 
   const [openModal, setOpenModal] = React.useState(false);
   const [currentProduct, setCurrentProduct] = React.useState();
+
+  const [saveProduct, { loading: saveProductLoading }] =
+    useMutation(save_product);
+  const [addToCart, { loading: addToCartLoading }] = useMutation(add_to_cart);
+
+  const [notification, setNotification] = React.useState({
+    open: false,
+    for: "",
+    title: "",
+    description: "",
+  });
+
+  React.useEffect(() => {
+    if (notification.open) {
+      setTimeout(() => {
+        setNotification({
+          open: false,
+          for: "",
+          title: "",
+          description: "",
+        });
+      }, 2500);
+    }
+  }, [notification]);
 
   return (
     <div className="bg-white">
@@ -46,7 +84,7 @@ const Home = () => {
         <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
           <h2 className="sr-only">Products</h2>
 
-          <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 xl:gap-x-8">
             {data.products.map((product) => (
               <div
                 key={product.id}
@@ -56,11 +94,11 @@ const Home = () => {
                   setOpenModal(true);
                 }}
               >
-                <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7">
+                <div className="h-48 w-40 sm:h-56 sm:w-44 w-full overflow-hidden rounded-md bg-gray-200 xl:h-64 xl:w-56">
                   <img
                     src={product.image}
                     alt={product.name}
-                    className="h-full w-full object-cover object-center group-hover:opacity-75"
+                    className="h-full w-full object-cover object-center opacity-90 hover:opacity-75"
                   />
                 </div>
                 <h3 className="mt-3 text-sm text-gray-700">{product.name}</h3>
@@ -115,6 +153,10 @@ const Home = () => {
 
                           <p className="text-2xl text-gray-900">
                             &#x20b9;{currentProduct.price}
+                          </p>
+
+                          <p className="text-sm text-gray-900">
+                            {currentProduct.description}
                           </p>
 
                           {/* <!-- Reviews --> */}
@@ -243,18 +285,84 @@ const Home = () => {
                             </div>
 
                             <button
-                              type="submit"
+                              type="button"
                               className="mt-6 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 gap-x-2"
+                              onClick={() => {
+                                addToCart({
+                                  variables: { productId: currentProduct.id },
+                                  context: {
+                                    headers: {
+                                      Authorization:
+                                        localStorage.getItem("token"),
+                                    },
+                                  },
+                                })
+                                  .then((res) => {
+                                    setNotification({
+                                      open: true,
+                                      for: "success",
+                                      title: "Added to cart!",
+                                      description: `Product ${currentProduct.id}`,
+                                    });
+                                  })
+                                  .catch((error) => {
+                                    setNotification({
+                                      open: true,
+                                      for: "fail",
+                                      title: "Failed to add!",
+                                      description: error.message,
+                                    });
+                                  });
+                              }}
                             >
-                              <HiOutlineShoppingBag className="h-5 w-5" />
-                              Add to bag
+                              {addToCartLoading ? (
+                                <AiOutlineLoading3Quarters className="animate-spin text-xl font-bold" />
+                              ) : (
+                                <React.Fragment>
+                                  <HiOutlineShoppingCart className="h-5 w-5" />
+                                  Add to Cart
+                                </React.Fragment>
+                              )}
                             </button>
                             <button
-                              type="submit"
+                              type="button"
                               className="mt-6 flex w-full items-center justify-center rounded-md border border-transparent text-indigo-600 px-8 py-3 text-base font-medium bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 gap-x-2"
+                              onClick={() => {
+                                saveProduct({
+                                  variables: { productId: currentProduct.id },
+                                  context: {
+                                    headers: {
+                                      Authorization:
+                                        localStorage.getItem("token"),
+                                    },
+                                  },
+                                })
+                                  .then((res) => {
+                                    setNotification({
+                                      open: true,
+                                      for: "success",
+                                      title: "Added to wishlist!",
+                                      description: `Product ${currentProduct.id}`,
+                                    });
+                                  })
+                                  .catch((error) => {
+                                    setNotification({
+                                      open: true,
+                                      for: "fail",
+                                      title: "Failed to add!",
+                                      description: error.message,
+                                    });
+                                  });
+                              }}
                             >
-                              <HiOutlineBookmark className="h-5 w-5" />
-                              Add to Wishlist
+                              {saveProductLoading ? (
+                                <AiOutlineLoading3Quarters className="animate-spin text-xl font-bold" />
+                              ) : (
+                                <React.Fragment>
+                                  <HiOutlineBookmark className="h-5 w-5" />
+                                  Add to Wishlist
+                                </React.Fragment>
+                              )}
                             </button>
                           </form>
                         </section>
@@ -269,6 +377,7 @@ const Home = () => {
           ""
         )}
       </React.Fragment>
+      <NotificationBox notification={notification} />
     </div>
   );
 };

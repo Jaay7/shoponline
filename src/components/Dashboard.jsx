@@ -8,9 +8,11 @@ import {
   HiPlus,
   HiMinus,
   HiOutlineBookmark,
+  HiOutlineShoppingCart,
 } from "react-icons/hi2";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
+import Footer from "./utils/Footer";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -538,7 +540,7 @@ const Header = () => {
                         to={"/cart"}
                         className="group -m-2 flex items-center p-2"
                       >
-                        <HiOutlineShoppingBag
+                        <HiOutlineShoppingCart
                           className={classNames(
                             location.pathname === "/cart"
                               ? "text-indigo-600"
@@ -556,6 +558,23 @@ const Header = () => {
                         >
                           {userData ? userData.me.cartProducts.length : "0"}
                         </span>
+                        <span className="sr-only">items in cart, view bag</span>
+                      </Link>
+                    </div>
+
+                    <div className="ml-4 flow-root lg:ml-6">
+                      <Link
+                        to={"/my-orders"}
+                        className="group -m-2 flex items-center p-2"
+                      >
+                        <HiOutlineShoppingBag
+                          className={classNames(
+                            location.pathname === "/my-orders"
+                              ? "text-indigo-600"
+                              : "text-gray-400 group-hover:text-gray-500",
+                            "h-6 w-6 flex-shrink-0",
+                          )}
+                        />
                         <span className="sr-only">items in cart, view bag</span>
                       </Link>
                     </div>
@@ -577,6 +596,7 @@ const Dashboard = () => {
     <div>
       <Header />
       <Outlet />
+      <Footer />
     </div>
   );
 };

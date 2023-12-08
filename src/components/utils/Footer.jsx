@@ -23,7 +23,7 @@ const FootItems = {
 
 const Footer = () => {
   return (
-    <div className="border-t py-16">
+    <div className="relative border-t overflow-hidden py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5">
         {Object.keys(FootItems).map((item) => (
           <div className="col-span-1 text-sm mb-4" key={item}>
@@ -65,6 +65,18 @@ const Footer = () => {
       <p className="text-sm text-gray-500 mx-auto max-w-7xl mt-12 border-t pt-8 text-center">
         &#169; 2023 Shop Online, Inc. All rights reserved.
       </p>
+      <div
+        className="absolute left-1/2 top-0 -z-10 -translate-x-1/2 blur-3xl xl:-top-6"
+        aria-hidden="true"
+      >
+        <div
+          className="aspect-[1155/678] w-[72.1875rem] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30"
+          style={{
+            clipPath:
+              "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
+          }}
+        />
+      </div>
     </div>
   );
 };

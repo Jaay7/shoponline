@@ -176,9 +176,14 @@ const Login = () => {
                   "Sign in"
                 )}
               </button>
+
+              <div className="text-xs text-gray-500 mt-3">
+                <p>Email: aasda@gmail.com</p>
+                <p>Password: 123456789</p>
+              </div>
             </div>
           </div>
-          <div className="mt-10 flex flex-1 items-center space-x-6">
+          <div className="mt-8 flex flex-1 items-center space-x-3 sm:space-x-6">
             <span className="h-px w-full bg-gray-200" aria-hidden="true"></span>
             <p className="text-sm font-medium text-gray-700 w-full">
               Or continue with

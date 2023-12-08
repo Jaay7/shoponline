@@ -40,7 +40,6 @@ const Orders = () => {
       },
     },
     pollInterval: 500,
-    fetchPolicy: "no-cache",
   });
   return (
     <div className="bg-gray-50">
@@ -83,12 +82,12 @@ const Orders = () => {
                           </p>
                         </div>
                         <div className="flex flex-row gap-x-4">
-                          <button
-                            type="button"
+                          <Link
+                            to={`/order/${order.id}`}
                             className="justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                           >
                             View Order
-                          </button>
+                          </Link>
                           <button
                             type="button"
                             className="justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
@@ -116,6 +115,9 @@ const Orders = () => {
                                 </p>
                                 <p className="text-sm text-gray-600">
                                   {item.product.category}
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                  Qty. {item.quantity}
                                 </p>
                               </div>
                             </div>

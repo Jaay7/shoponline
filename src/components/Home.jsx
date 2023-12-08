@@ -284,86 +284,94 @@ const Home = () => {
                               </fieldset>
                             </div>
 
-                            <button
-                              type="button"
-                              className="mt-6 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 gap-x-2"
-                              onClick={() => {
-                                addToCart({
-                                  variables: { productId: currentProduct.id },
-                                  context: {
-                                    headers: {
-                                      Authorization:
-                                        localStorage.getItem("token"),
-                                    },
-                                  },
-                                })
-                                  .then((res) => {
-                                    setNotification({
-                                      open: true,
-                                      for: "success",
-                                      title: "Added to cart!",
-                                      description: `Product ${currentProduct.id}`,
-                                    });
-                                  })
-                                  .catch((error) => {
-                                    setNotification({
-                                      open: true,
-                                      for: "fail",
-                                      title: "Failed to add!",
-                                      description: error.message,
-                                    });
-                                  });
-                              }}
-                            >
-                              {addToCartLoading ? (
-                                <AiOutlineLoading3Quarters className="animate-spin text-xl font-bold" />
-                              ) : (
-                                <React.Fragment>
-                                  <HiOutlineShoppingCart className="h-5 w-5" />
-                                  Add to Cart
-                                </React.Fragment>
-                              )}
-                            </button>
-                            <button
-                              type="button"
-                              className="mt-6 flex w-full items-center justify-center rounded-md border border-transparent text-indigo-600 px-8 py-3 text-base font-medium bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 gap-x-2"
-                              onClick={() => {
-                                saveProduct({
-                                  variables: { productId: currentProduct.id },
-                                  context: {
-                                    headers: {
-                                      Authorization:
-                                        localStorage.getItem("token"),
-                                    },
-                                  },
-                                })
-                                  .then((res) => {
-                                    setNotification({
-                                      open: true,
-                                      for: "success",
-                                      title: "Added to wishlist!",
-                                      description: `Product ${currentProduct.id}`,
-                                    });
-                                  })
-                                  .catch((error) => {
-                                    setNotification({
-                                      open: true,
-                                      for: "fail",
-                                      title: "Failed to add!",
-                                      description: error.message,
-                                    });
-                                  });
-                              }}
-                            >
-                              {saveProductLoading ? (
-                                <AiOutlineLoading3Quarters className="animate-spin text-xl font-bold" />
-                              ) : (
-                                <React.Fragment>
-                                  <HiOutlineBookmark className="h-5 w-5" />
-                                  Add to Wishlist
-                                </React.Fragment>
-                              )}
-                            </button>
+                            {localStorage.getItem("token") && (
+                              <React.Fragment>
+                                <button
+                                  type="button"
+                                  className="mt-6 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 gap-x-2"
+                                  onClick={() => {
+                                    addToCart({
+                                      variables: {
+                                        productId: currentProduct.id,
+                                      },
+                                      context: {
+                                        headers: {
+                                          Authorization:
+                                            localStorage.getItem("token"),
+                                        },
+                                      },
+                                    })
+                                      .then((res) => {
+                                        setNotification({
+                                          open: true,
+                                          for: "success",
+                                          title: "Added to cart!",
+                                          description: `Product ${currentProduct.id}`,
+                                        });
+                                      })
+                                      .catch((error) => {
+                                        setNotification({
+                                          open: true,
+                                          for: "fail",
+                                          title: "Failed to add!",
+                                          description: error.message,
+                                        });
+                                      });
+                                  }}
+                                >
+                                  {addToCartLoading ? (
+                                    <AiOutlineLoading3Quarters className="animate-spin text-xl font-bold" />
+                                  ) : (
+                                    <React.Fragment>
+                                      <HiOutlineShoppingCart className="h-5 w-5" />
+                                      Add to Cart
+                                    </React.Fragment>
+                                  )}
+                                </button>
+                                <button
+                                  type="button"
+                                  className="mt-6 flex w-full items-center justify-center rounded-md border border-transparent text-indigo-600 px-8 py-3 text-base font-medium bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 gap-x-2"
+                                  onClick={() => {
+                                    saveProduct({
+                                      variables: {
+                                        productId: currentProduct.id,
+                                      },
+                                      context: {
+                                        headers: {
+                                          Authorization:
+                                            localStorage.getItem("token"),
+                                        },
+                                      },
+                                    })
+                                      .then((res) => {
+                                        setNotification({
+                                          open: true,
+                                          for: "success",
+                                          title: "Added to wishlist!",
+                                          description: `Product ${currentProduct.id}`,
+                                        });
+                                      })
+                                      .catch((error) => {
+                                        setNotification({
+                                          open: true,
+                                          for: "fail",
+                                          title: "Failed to add!",
+                                          description: error.message,
+                                        });
+                                      });
+                                  }}
+                                >
+                                  {saveProductLoading ? (
+                                    <AiOutlineLoading3Quarters className="animate-spin text-xl font-bold" />
+                                  ) : (
+                                    <React.Fragment>
+                                      <HiOutlineBookmark className="h-5 w-5" />
+                                      Add to Wishlist
+                                    </React.Fragment>
+                                  )}
+                                </button>
+                              </React.Fragment>
+                            )}
                           </form>
                         </section>
                       </div>

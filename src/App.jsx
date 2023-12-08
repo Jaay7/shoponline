@@ -9,6 +9,8 @@ import Cart from "./components/user/Cart";
 import Orders from "./components/user/Orders";
 import SavedProducts from "./components/user/SavedProducts";
 import Checkout from "./components/user/Checkout";
+import NotFound from "./components/utils/NotFound";
+import OrderScreen from "./components/user/OrderScreen";
 
 function App() {
   return (
@@ -23,8 +25,10 @@ function App() {
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/my-orders" element={<Orders />} />
           </Route>
+          <Route path="/order/:orderId" element={<OrderScreen />} />
           <Route path="/signin" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </div>

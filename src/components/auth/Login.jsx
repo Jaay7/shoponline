@@ -2,7 +2,7 @@ import React from "react";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebookSquare } from "react-icons/fa";
 import { RxEyeClosed, RxEyeOpen } from "react-icons/rx";
-import { useMutation, gql } from "@apollo/client";
+import { useMutation, gql, useQuery, useLazyQuery } from "@apollo/client";
 import { Navigate, Link, useNavigate } from "react-router-dom";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import NotificationBox from "../utils/NotificationBox";
@@ -11,6 +11,17 @@ const login_user = gql`
   mutation Login($email: String!, $password: String!) {
     login(email: $email, password: $password) {
       token
+    }
+  }
+`;
+
+const get_user_data = gql`
+  query {
+    me {
+      id
+      username
+      email
+      userType
     }
   }
 `;
@@ -29,12 +40,14 @@ const Login = () => {
   });
 
   const [LoginUser, { loading }] = useMutation(login_user);
+  const [getUserData, { data: userData, loading: userLoading }] =
+    useLazyQuery(get_user_data);
 
   const onSubmit = async () => {
     await LoginUser({
       variables: { email: email, password: password },
     })
-      .then((response) => {
+      .then(async (response) => {
         localStorage.setItem("token", response.data.login.token);
         setNotification({
           open: true,
@@ -42,7 +55,22 @@ const Login = () => {
           title: "Login successful!",
           description: "You will be redirected to home page.",
         });
-        navigate("/");
+        await getUserData({
+          context: {
+            headers: {
+              Authorization: localStorage.getItem("token"),
+            },
+          },
+        });
+        if (userLoading) {
+          console.log("loading...");
+        } else if (userData) {
+          if (userData.me.userType === "admin") {
+            navigate("/dashboard");
+          } else {
+            navigate("/");
+          }
+        }
       })
       .catch((error) => {
         setNotification({

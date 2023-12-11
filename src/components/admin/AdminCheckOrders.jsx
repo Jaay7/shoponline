@@ -50,7 +50,7 @@ const AdminCheckOrders = () => {
     pollInterval: 500,
   });
   return (
-    <div className="bg-gray-50 h-full w-full">
+    <div className="bg-gray-50 min-h-full w-full">
       <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 sm:py-12 lg:max-w-7xl lg:px-8">
         <div className="pb-10">
           <h3 className="text-3xl font-bold">Received Orders</h3>

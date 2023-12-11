@@ -8,6 +8,7 @@ import {
   HiOutlineShoppingBag,
   HiXMark,
   HiOutlineShoppingCart,
+  HiPlus,
 } from "react-icons/hi2";
 
 function classNames(...classes) {
@@ -18,6 +19,7 @@ const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: <RxDashboard /> },
   { name: "Orders", href: "/orders", icon: <HiOutlineShoppingBag /> },
   { name: "Products", href: "/products", icon: <HiOutlineShoppingCart /> },
+  { name: "New product", href: "/add-product", icon: <HiPlus /> },
   { name: "Profile", href: "/profile", icon: <IoPersonCircleOutline /> },
 ];
 

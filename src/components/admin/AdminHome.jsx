@@ -3,6 +3,7 @@ import { gql, useQuery } from "@apollo/client";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { HiOutlineShoppingBag, HiOutlineWallet } from "react-icons/hi2";
 import { IoPeopleOutline } from "react-icons/io5";
+import { VictoryBar, VictoryChart, VictoryTheme } from "victory";
 
 const get_orders = gql`
   query Query {
@@ -53,6 +54,28 @@ const AdminHome = () => {
       }
       return uniqueValues;
     }, []);
+  };
+
+  const NofOrdersProducts = (dataArg) => {
+    const productCountMap = {};
+
+    dataArg.orders.forEach((order) => {
+      order.orderProducts.forEach((product) => {
+        const productName = product.product.name.toLowerCase();
+
+        if (productCountMap[productName]) {
+          productCountMap[productName]++;
+        } else {
+          productCountMap[productName] = 1;
+        }
+      });
+    });
+
+    // Transform the count map into an array of objects
+    const array = Object.entries(productCountMap).map(
+      ([productName, count]) => ({ x: productName, y: count }),
+    );
+    return array;
   };
 
   return (
@@ -170,7 +193,28 @@ const AdminHome = () => {
                   ))}
                 </div>
                 {/* Based on cities */}
-                <div className="mt-3">
+                <div className="mt-3 max-w-md">
+                  <VictoryChart
+                    theme={VictoryTheme.material}
+                    domainPadding={{ x: 20 }}
+                    // style={{ parent: { marginLeft: 40 } }}
+                    // height={150}
+                    // width={300}
+                  >
+                    <VictoryBar
+                      animate={{
+                        duration: 2000,
+                        onLoad: { duration: 1000 },
+                      }}
+                      barRatio={0.5}
+                      horizontal
+                      labels={({ datum }) => datum.y}
+                      style={{
+                        data: { fill: "#1984c5" },
+                      }}
+                      data={NofOrdersProducts(data)}
+                    />
+                  </VictoryChart>
                   {/* {getUniqueValues(data.orders, "orderBy").map((item) => (
                     <p key={item.city}>
                       {item.city} -{" "}

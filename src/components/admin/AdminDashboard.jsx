@@ -74,7 +74,7 @@ const SideNavigation = () => {
         --> */}
             <div className="relative mr-auto flex h-full w-full max-w-xs flex-col overflow-y-auto bg-white py-4 pb-12 shadow-xl">
               <div className="flex items-center justify-between pl-8 pr-4">
-                <h2 className="text-lg font-medium text-gray-900">
+                <h2 className="text-lg font-semibold text-gray-900">
                   Shop Online
                 </h2>
                 <button onClick={() => setOpenSideMenu(false)}>
@@ -119,6 +119,9 @@ const SideNavigation = () => {
               {/* <!-- Nav Items --> */}
               <div className="col-span-2 hidden lg:block border-r h-screen">
                 <div className="mt-8 flex flex-col space-y-1.5 px-4">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                    Shop Online
+                  </h2>
                   {navigation.map((item) => (
                     <Link
                       key={item.name}
